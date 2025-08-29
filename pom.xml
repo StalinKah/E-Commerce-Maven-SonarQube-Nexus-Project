@@ -11,6 +11,80 @@
   <name>E-Commerce WebApp</name>
   <description>Simple JSP/Servlet E-commerce demo packaged as WAR for Tomcat</description>
 
+  <!-- Centralize the Nexus base URL: change here if you want to use the private IP -->
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <failOnMissingWebXml>false</failOnMissingWebXml>
+    <nexus.baseUrl>http://172.31.8.46:8081</nexus.baseUrl>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>4.0.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+      <version>1.2</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>webapp</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.11.0</version>
+        <configuration>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.3.2</version>
+        <configuration>
+          <failOnMissingWebXml>false</failOnMissingWebXml>
+          <warSourceDirectory>src/main/webapp</warSourceDirectory>
+        </configuration>
+      </plugin>
+
+      <!-- Optional guard: pin the releases URL so a stray altDeploymentRepository can't force snapshots -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>3.1.1</version>
+        <configuration>
+          <altDeploymentRepository>
+            nexus-releases::default::${nexus.baseUrl}/repository/maven-releases/
+          </altDeploymentRepository>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <!-- Correct: releases -> maven-releases, snapshots -> maven-snapshots -->
+  <distributionManagement>
+    <repository>
+      <id>nexus-releases</id>
+      <url>${nexus.baseUrl}/repository/maven-releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>nexus-snapshots</id>
+      <url>${nexus.baseUrl}/repository/maven-snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+</project>
+
   <properties>
     <!-- Change this if your JDK is 11+ -->
     <maven.compiler.source>1.8</maven.compiler.source>
